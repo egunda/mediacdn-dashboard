@@ -1,0 +1,212 @@
+{
+  "displayName": "Media CDN - Live Stream & Daily Breakdown Operations",
+  "gridLayout": {
+    "columns": "2",
+    "widgets": [
+      {
+        "title": "Total Data Transferred (Selected Window)",
+        "scorecard": {
+          "timeSeriesQuery": {
+            "timeSeriesFilter": {
+              "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/response_bytes_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+              "aggregation": {
+                "perSeriesAligner": "ALIGN_SUM",
+                "crossSeriesReducer": "REDUCE_SUM"
+              }
+            },
+            "outputFullDuration": true
+          }
+        }
+      },
+      {
+        "title": "Total Volume by Service Config (Selected Window)",
+        "timeSeriesTable": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/response_bytes_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "perSeriesAligner": "ALIGN_SUM",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                },
+                "outputFullDuration": true
+              }
+            }
+          ],
+          "metricVisualization": "NUMBER"
+        }
+      },
+      {
+        "title": "Daily Egress Volume Breakdown (Bars - GB/Day per Service)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/response_bytes_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "86400s",
+                    "perSeriesAligner": "ALIGN_SUM",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Live Egress Bandwidth by Service (Throughput)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/response_bytes_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_RATE",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                },
+                "unitOverride": "By/s"
+              },
+              "plotType": "LINE"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Request Rate / Viewer Concurrency (Requests/sec)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/request_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_RATE",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                }
+              },
+              "plotType": "LINE"
+            }
+          ]
+        }
+      },
+      {
+        "title": "P95 Total Delivery Latency (ms)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/total_latencies\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_PERCENTILE_95",
+                    "crossSeriesReducer": "REDUCE_PERCENTILE_95",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                },
+                "unitOverride": "ms"
+              },
+              "plotType": "LINE"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Cache Offload: Hit vs Miss vs Revalidated",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/request_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_RATE",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name",
+                      "metric.label.cache_result"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Error Rates: 4xx & 5xx HTTP Status Codes",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/request_count\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\" (metric.label.response_code_class=\"4xx\" OR metric.label.response_code_class=\"5xx\")",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_RATE",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "resource.label.service_name",
+                      "metric.label.response_code_class"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR"
+            }
+          ]
+        }
+      },
+      {
+        "title": "CMCD Client Video Buffer Length (Avg ms)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"edgecache.googleapis.com/edge_cache_route_rule/cmcd/buffer_lengths\" resource.type=\"edgecache.googleapis.com/EdgeCacheRouteRule\"",
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "perSeriesAligner": "ALIGN_MEAN",
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "groupByFields": [
+                      "resource.label.service_name"
+                    ]
+                  }
+                },
+                "unitOverride": "ms"
+              },
+              "plotType": "LINE"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
